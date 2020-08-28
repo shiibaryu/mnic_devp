@@ -1,0 +1,19 @@
+bess.add_worker(wid=0,core=4)
+bess.add_worker(wid=1,core=5)
+bess.add_worker(wid=2,core=6)
+bess.add_worker(wid=3,core=7)
+
+myport::PMDPort(port_id=0,num_inc_q=2,num_out_q=2)
+
+tx1::TxShmPort1() ->  QueueOut(port=myport,qid=0)
+tx2::TxShmPort2() ->  QueueOut(port=myport,qid=1)
+
+rx1::QueueInc(port=myport,qid=0) -> RxShmPort1()
+rx2::QueueInc(port=myport,qid=1) -> RxShmPort2()
+
+tx1.attach_task(wid=0)
+tx2.attach_task(wid=1)
+
+rx1.attach_task(wid=2)
+rx2.attach_task(wid=3)
+

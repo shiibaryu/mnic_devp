@@ -1,0 +1,51 @@
+bess.add_worker(wid=0,core=0)
+bess.add_worker(wid=1,core=1)
+bess.add_worker(wid=2,core=2)
+bess.add_worker(wid=3,core=3)
+bess.add_worker(wid=4,core=4)
+bess.add_worker(wid=5,core=5)
+bess.add_worker(wid=6,core=6)
+bess.add_worker(wid=7,core=7)
+
+#bess.add_worker(wid=4,core=0)
+#bess.add_worker(wid=5,core=1)
+#bess.add_worker(wid=6,core=2)
+#bess.add_worker(wid=7,core=3)
+
+myport::PMDPort(port_id=0,num_inc_q=4,num_out_q=4)
+
+tx1::TxShmPort1() ->  QueueOut(port=myport,qid=0)
+tx2::TxShmPort2() ->  QueueOut(port=myport,qid=1)
+tx3::TxShmPort3() ->  QueueOut(port=myport,qid=2)
+tx4::TxShmPort4() ->  QueueOut(port=myport,qid=3)
+
+rx1::QueueInc(port=myport,qid=0) -> RxShmPort1()
+rx2::QueueInc(port=myport,qid=1) -> RxShmPort2()
+rx3::QueueInc(port=myport,qid=2) -> RxShmPort1()
+rx4::QueueInc(port=myport,qid=3) -> RxShmPort2()
+
+#rx1::QueueInc(port=myport,qid=0,prefetch=1) -> RxShmPort1()
+#rx2::QueueInc(port=myport,qid=1,prefetch=1) -> RxShmPort2()
+#rx3::QueueInc(port=myport,qid=2,prefetch=1) -> RxShmPort3()
+#rx4::QueueInc(port=myport,qid=3,prefetch=1) -> RxShmPort4()
+
+#rx1.set_burst(burst=32)
+#rx2.set_burst(burst=32)
+#rx3.set_burst(burst=32)
+#rx4.set_burst(burst=32)
+
+tx1.attach_task(wid=2)
+tx2.attach_task(wid=6)
+tx3.attach_task(wid=0)
+tx4.attach_task(wid=4)
+
+#rx1.attach_task(wid=4)
+#rx2.attach_task(wid=5)
+#rx3.attach_task(wid=6)
+#rx4.attach_task(wid=7)
+
+rx1.attach_task(wid=1)
+rx2.attach_task(wid=3)
+rx3.attach_task(wid=5)
+rx4.attach_task(wid=7)
+
